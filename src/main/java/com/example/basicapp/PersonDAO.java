@@ -9,17 +9,17 @@ public class PersonDAO {
     @Id
     @Column(name="person_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer personId;
+    private Long personId;
 
     private String name;
 
     private Integer age;
 
-    public Integer getPersonId() {
+    public Long getPersonId() {
         return personId;
     }
 
-    public void setPersonId(Integer personId) {
+    public void setPersonId(Long personId) {
         this.personId = personId;
     }
 

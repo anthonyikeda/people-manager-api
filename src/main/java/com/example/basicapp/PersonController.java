@@ -23,7 +23,7 @@ public class PersonController {
     @PostMapping
     public ResponseEntity<PersonDAO> createPerson(@RequestParam String name, @RequestParam Integer age) {
         PersonDAO created = this.manager.createPerson(name, age);
-        return ResponseEntity.created(URI.create(String.format("/api/person/", created.getPersonId()))).build();
+        return ResponseEntity.created(URI.create(String.format("/api/person/%s", created.getPersonId()))).build();
     }
 
     @DeleteMapping("/{personId}")

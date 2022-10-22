@@ -42,7 +42,7 @@ public class PersonManager {
 
         int totalUpdates = this.template.update(connection -> {
             PreparedStatement pstmt = connection.prepareStatement(softDeletePerson);
-            pstmt.setInt(1, personId);
+            pstmt.setLong(1, personId);
             return pstmt;
         });
 
@@ -63,13 +63,14 @@ public class PersonManager {
         toSave.setAge(age);
 
         this.template.update(connection -> {
-            PreparedStatement pss = connection.prepareStatement(savePerson);
+            PreparedStatement pss = connection.prepareStatement(savePerson, new String[]{"person_id"});
             pss.setString(1, name);
             pss.setInt(2, age);
             return pss;
         }, keyHolder);
 
-        toSave.setPersonId((Integer) keyHolder.getKey());
+        toSave.setPersonId((Long) keyHolder.getKey());
+        log.debug("Returning key of {}", keyHolder.getKey());
         return toSave;
     }
 
@@ -81,7 +82,7 @@ public class PersonManager {
                                    rs -> {
             if(rs.next()) {
                 var person = new PersonDAO();
-                person.setPersonId(rs.getInt("person_id"));
+                person.setPersonId(rs.getLong("person_id"));
                 person.setName(rs.getString("name"));
                 person.setAge(rs.getInt("age"));
                 return person;
