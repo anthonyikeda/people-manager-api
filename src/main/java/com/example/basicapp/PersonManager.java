@@ -1,5 +1,7 @@
 package com.example.basicapp;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -19,23 +21,28 @@ public class PersonManager {
     private final Logger log = LoggerFactory.getLogger(PersonManager.class);
 
     private final JdbcTemplate template;
+    private MeterRegistry registry;
 
-    public PersonManager(JdbcTemplate temp) {
+    public PersonManager(JdbcTemplate temp, MeterRegistry registry) {
         this.template = temp;
+        this.registry = registry;
     }
 
     public List<PersonDAO> findAllPaginated(int start, int size) {
         String findPaginated = "select person_id, name, age from person where person_deleted = false limit ? offset ?";
 
-        List<PersonDAO> results = this.template.query(con -> {
-            PreparedStatement pstmt = con.prepareStatement(findPaginated);
-            pstmt.setInt(1, size);
-            pstmt.setInt(2, start);
-            return pstmt;
-        },
-        new PersonRowMapper());
+        Timer timer = Timer.builder("manager-get-persons-paginated")
+        .description("Measures how long to call the jdbc template for paginated list")
+        .tags("manager", "jdbcTemplate", "paginated")
+        .register(registry);
 
-        return results;
+        return timer.record( () -> this.template.query(con -> {
+                PreparedStatement pstmt = con.prepareStatement(findPaginated);
+                pstmt.setInt(1, size);
+                pstmt.setInt(2, start);
+                return pstmt;
+            },
+            new PersonRowMapper()));
     }
     public void softDeletePerson(Integer personId) throws PersonNotFoundException {
         final String softDeletePerson = "update person set person_deleted = true where person_id = ? and person_deleted = false";
@@ -77,19 +84,27 @@ public class PersonManager {
     public PersonDAO findPersonById(Integer personId) throws PersonNotFoundException {
         final String sql = "select person_id, name, age from person where person_id = ? and person_deleted = false";
 
-        PersonDAO personToReturn = this.template.query(sql,
-                                   pstmt -> pstmt.setInt(1, personId),
-                                   rs -> {
-            if(rs.next()) {
-                var person = new PersonDAO();
-                person.setPersonId(rs.getLong("person_id"));
-                person.setName(rs.getString("name"));
-                person.setAge(rs.getInt("age"));
-                return person;
-            } else {
-                return null;
-            }
-            });
+        Timer timer = Timer.builder("manager-get-person-by-id")
+        .description("Measures how long to call the jdbc template")
+        .tags("manager", "jdbcTemplate")
+        .register(registry);
+
+        PersonDAO personToReturn = timer.record(() ->
+            this.template.query(sql,
+                                pstmt -> pstmt.setInt(1, personId),
+                                rs -> {
+                if(rs.next()) {
+                    var person = new PersonDAO();
+                    person.setPersonId(rs.getLong("person_id"));
+                    person.setName(rs.getString("name"));
+                    person.setAge(rs.getInt("age"));
+                    return person;
+                } else {
+                    return null;
+                }
+            })
+        );
+
         if (personToReturn == null) {
             throw new PersonNotFoundException(String.format("Unable to find person with id %d", personId));
         }
