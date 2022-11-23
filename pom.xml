@@ -71,6 +71,9 @@
                 <configuration>
                     <to>
                         <image>anthonyikeda/${project.artifactId}:${project.version}</image>
+                        <!--
+                        <image>223945745576.dkr.ecr.us-east-1.amazonaws.com/${artifactId}:${project.version}</image>
+                        -->
                     </to>
                     <from>
                         <image>eclipse-temurin:19-jre</image>
