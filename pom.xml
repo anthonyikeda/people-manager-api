@@ -70,7 +70,7 @@
                 <version>3.3.1</version>
                 <configuration>
                     <to>
-                        <image>anthonyikeda/${artifactId}:${project.version}</image>
+                        <image>anthonyikeda/${project.artifactId}:${project.version}</image>
                     </to>
                     <from>
                         <image>eclipse-temurin:19-jre</image>
