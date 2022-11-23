@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,14 @@ public class PersonController {
     public PersonController(PersonManager manager, MeterRegistry registry) {
         this.manager = manager;
         this.registry = registry;
+    }
+
+    @PutMapping("/{personId}")
+    public ResponseEntity<Void> updatePerson(@PathVariable("personId") Long personId, @RequestBody PersonDAO person) {
+        log.info("Person id: {}, name: {}, age: {}", personId, person.getName(), person.getAge());
+        person.setPersonId(personId);
+        this.manager.updatePerson(person);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @PostMapping

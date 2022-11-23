@@ -1,5 +1,7 @@
 package com.example.basicapp;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,6 +10,7 @@ public class PersonDAO {
 
     @Id
     @Column(name="person_id")
+    @JsonProperty("person_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long personId;
 

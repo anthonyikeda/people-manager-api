@@ -28,6 +28,20 @@ public class PersonManager {
         this.registry = registry;
     }
 
+    public void updatePerson(PersonDAO person) {
+        log.debug("Updating person with id {}", person.getPersonId());
+
+        String updateSQL = "update person set name = ?, age = ? where person_id = ?";
+
+        this.template.update(psc -> {
+            PreparedStatement pstmt = psc.prepareStatement(updateSQL);
+            pstmt.setString(1, person.getName());
+            pstmt.setInt(2, person.getAge());
+            pstmt.setLong(3, person.getPersonId());
+            return pstmt;
+        });
+    }
+
     public List<PersonDAO> findAllPaginated(int start, int size) {
         String findPaginated = "select person_id, name, age from person where person_deleted = false limit ? offset ?";
 
