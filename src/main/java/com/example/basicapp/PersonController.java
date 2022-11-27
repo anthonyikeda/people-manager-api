@@ -69,6 +69,7 @@ public class PersonController {
     @GetMapping
     public ResponseEntity<List<PersonDAO>> findAllPaginated(@RequestParam(name = "start", defaultValue = "0") Integer start, @RequestParam(name = "size", defaultValue = "10") Integer size) {
         List<PersonDAO> results = this.manager.findAllPaginated(start, size);
-        return ResponseEntity.ok(results);
+        Long total = this.manager.getTotalPersons();
+        return ResponseEntity.status(HttpStatus.OK).header("X-Total-Count", String.valueOf(total)).body(results);
     }
 }

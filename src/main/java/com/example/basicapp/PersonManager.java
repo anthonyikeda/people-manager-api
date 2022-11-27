@@ -28,6 +28,17 @@ public class PersonManager {
         this.registry = registry;
     }
 
+    public Long getTotalPersons() {
+        final String query = "SELECT reltuples AS estimate FROM pg_class where relname = 'person';";
+
+        return this.template.query(query, rs -> {
+            long value = 0L;
+            if(rs.next()) {
+                value = rs.getLong("estimate");
+            }
+            return value;
+        });
+    }
     public void updatePerson(PersonDAO person) {
         log.debug("Updating person with id {}", person.getPersonId());
 
