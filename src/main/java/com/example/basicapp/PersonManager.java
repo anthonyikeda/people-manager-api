@@ -58,7 +58,7 @@ public class PersonManager {
 
         Timer timer = Timer.builder("manager-get-persons-paginated")
         .description("Measures how long to call the jdbc template for paginated list")
-        .tags("manager", "jdbcTemplate", "paginated","true")
+        .tags("manager", "personManager", "paginated","true")
         .register(registry);
 
         return timer.record( () -> this.template.query(con -> {

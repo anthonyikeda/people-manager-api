@@ -1,5 +1,8 @@
 package com.example.basicapp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,15 +14,19 @@ public class LocationDAO {
 
     @Id
     @Column(name = "location_id")
+    @JsonProperty("location_id")
     private Long locationId;
 
     @Column(name = "location_city")
+    @JsonProperty("location_city")
     private String locationCity;
 
     @Column(name = "location_market")
+    @JsonProperty("location_market")
     private String locationMarket;
 
     @Column(name = "location_deleted")
+    @JsonIgnore
     private boolean deleted;
 
     public Long getLocationId() {

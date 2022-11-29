@@ -1,5 +1,8 @@
 package com.example.basicapp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,16 +11,20 @@ public class ProjectDAO {
 
     @Id
     @Column(name = "project_id")
+    @JsonProperty("project_id")
     private Long projectId;
 
     @Column(name = "project_name")
+    @JsonProperty("project_name")
     private String name;
 
     @ManyToOne(targetEntity = LocationDAO.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_location_id")
+    @JsonProperty("project_location")
     private LocationDAO location;
 
     @Column(name = "project_deleted")
+    @JsonIgnore
     private boolean projectDeleted;
 
     public Long getProjectId() {
